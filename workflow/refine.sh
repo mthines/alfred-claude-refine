@@ -45,7 +45,17 @@ if [ -z "$TEXT" ]; then
   exit 65
 fi
 
-# Command substitution strips trailing newlines, which is what we want for
-# pasted output. Then emit without a trailing newline of our own.
-OUTPUT=$(printf '%s' "$TEXT" | "$CR" "$TEMPLATE")
+# Two paths: __custom__ sentinel means use $custom_instruction (set by the
+# Script Filter item's variables block); anything else is a regular template
+# name. Command substitution strips trailing newlines, which is what we want
+# for pasted output.
+if [ "$TEMPLATE" = "__custom__" ]; then
+  if [ -z "${custom_instruction:-}" ]; then
+    echo "ERROR: custom instruction is empty." >&2
+    exit 64
+  fi
+  OUTPUT=$(printf '%s' "$TEXT" | "$CR" --instruction "$custom_instruction")
+else
+  OUTPUT=$(printf '%s' "$TEXT" | "$CR" "$TEMPLATE")
+fi
 printf '%s' "$OUTPUT"

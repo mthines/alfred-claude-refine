@@ -336,6 +336,9 @@ USAGE
     ⌘ + ↩   Foreground mode — auto-pastes the rewritten text into the active app.
             Use when you'll stay put for the 3–5s rewrite.
 
+  Type `rw - &lt;your instruction&gt;` to skip templates and refine with a one-off
+  prompt. Example:  rw - make this more focused on what it's trying to solve
+
   Universal Action ("Refine via Claude") works the same way — same modifier rules.
 
 SETUP

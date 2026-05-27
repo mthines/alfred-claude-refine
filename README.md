@@ -81,6 +81,7 @@ Restart Alfred once after the first `--dev` install so it registers the new work
 
 - **Keyword**: type `rw` in Alfred. The list of templates appears. Pick one (or type to filter).
 - **Universal Action**: select any text, invoke Alfred's Universal Actions, choose **Refine via Claude**, pick a template.
+- **Custom instruction**: type `rw - <free-form instruction>` to skip the template list and refine with a one-off prompt. Example: `rw - make this more focused on what it's trying to solve`.
 
 Pre-bind the Universal Action to a hotkey in Alfred Preferences → Features → Universal Actions if you use it often.
 
@@ -100,6 +101,9 @@ Hold `⌘` over an item in the Alfred picker to see the foreground-mode subtitle
 ```bash
 echo "this sentence is too long and has too many words" | claude-refine concise
 pbpaste | claude-refine professional | pbcopy
+
+# Custom one-off instruction (no template file needed)
+echo "..." | claude-refine --instruction "make this more focused on what it's trying to solve"
 ```
 
 ## Templates

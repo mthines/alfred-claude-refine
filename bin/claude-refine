@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Refine text through Claude using a named markdown template.
+"""Refine text through Claude using a named markdown template OR a custom instruction.
 
 Reads the text to refine from stdin. Writes the rewritten text to stdout.
 
 Usage:
     echo "some text" | claude-refine concise
+    echo "some text" | claude-refine --instruction "make it more focused on what it's trying to solve"
     pbpaste | claude-refine professional | pbcopy
 
 Template resolution order:
@@ -62,6 +63,17 @@ def strip_frontmatter(text: str) -> str:
 
 GLOBAL_PRESERVATION_RULES = (
     "GLOBAL PRESERVATION RULES (apply to every template, no exceptions):\n"
+    "\n"
+    "Markdown:\n"
+    "- Preserve any markdown structure already in the input — headings (#, ##), "
+    "lists (-, *, 1.), code blocks (```), inline code (`), blockquotes (>), "
+    "bold (**), italic (*), tables. Do NOT strip formatting when reshaping text.\n"
+    "- If the input has no markdown but the rewritten output would naturally "
+    "benefit (multiple distinct ideas, parallel items, code references), use "
+    "markdown — it renders cleanly in Linear, Slack, GitHub, and most "
+    "destinations the user is likely pasting into.\n"
+    "\n"
+    "Links, references, mentions:\n"
     "- Preserve every URL, markdown link (`[text](url)`), bare link, ticket "
     "reference (e.g. `#ABC-123`, `XYZ-456`), `@mention`, GitHub-style `#1234`, "
     "and file path from the input EXACTLY as written — character-for-character.\n"
@@ -88,31 +100,51 @@ def build_prompt(template_body: str, input_text: str) -> str:
     )
 
 
+CUSTOM_INSTRUCTION_FRAME = (
+    "You are an editor. Apply the following user instruction to the text inside "
+    "`<text-to-refine>`. Preserve meaning, structure, tone, and length unless "
+    "the instruction explicitly asks you to change one of those.\n\n"
+    "User instruction:\n{instruction}"
+)
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         sys.stderr.write(
-            "Usage: claude-refine <template-name>  (reads input from stdin)\n"
+            "Usage:\n"
+            "  claude-refine <template-name>             (reads input from stdin)\n"
+            "  claude-refine --instruction \"<text>\"      (custom one-off instruction)\n"
         )
         return 64
 
-    template_name = sys.argv[1]
-    templates = collect_templates()
-    template_file = templates.get(template_name)
-    if template_file is None:
-        available = ", ".join(sorted(templates.keys())) or "(none — no templates found)"
-        sys.stderr.write(
-            f"Template not found: {template_name}\n"
-            f"Searched: {BUNDLED_DIR}, {USER_DIR}\n"
-            f"Available: {available}\n"
-        )
-        return 66
+    if sys.argv[1] == "--instruction":
+        if len(sys.argv) < 3:
+            sys.stderr.write("--instruction requires a non-empty value\n")
+            return 64
+        instruction = sys.argv[2].strip()
+        if not instruction:
+            sys.stderr.write("--instruction value is empty\n")
+            return 64
+        template_body = CUSTOM_INSTRUCTION_FRAME.format(instruction=instruction)
+    else:
+        template_name = sys.argv[1]
+        templates = collect_templates()
+        template_file = templates.get(template_name)
+        if template_file is None:
+            available = ", ".join(sorted(templates.keys())) or "(none — no templates found)"
+            sys.stderr.write(
+                f"Template not found: {template_name}\n"
+                f"Searched: {BUNDLED_DIR}, {USER_DIR}\n"
+                f"Available: {available}\n"
+            )
+            return 66
+        template_body = strip_frontmatter(template_file.read_text())
 
     input_text = sys.stdin.read().strip()
     if not input_text:
         sys.stderr.write("No input text on stdin\n")
         return 65
 
-    template_body = strip_frontmatter(template_file.read_text())
     final_prompt = build_prompt(template_body, input_text)
 
     try:

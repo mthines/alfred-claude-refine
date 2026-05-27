@@ -57,21 +57,63 @@ def parse_frontmatter(text: str) -> dict[str, str]:
     return meta
 
 
+def custom_instruction_item(instruction: str) -> dict:
+    """Build the Script Filter item for a custom one-off instruction.
+
+    Invalid (not selectable) when the instruction text is empty, so the user
+    sees a hint instead of an actionable item that would do nothing useful.
+    """
+    has_text = bool(instruction)
+    subtitle = (
+        f"Refine with this instruction: \"{instruction}\""
+        if has_text
+        else "Type your refinement instruction after the dash…"
+    )
+    return {
+        "uid": "__custom__",
+        "title": "Custom instruction",
+        "subtitle": subtitle,
+        "arg": "__custom__",
+        "valid": has_text,
+        "variables": {
+            "paste_mode": "background",
+            "custom_instruction": instruction,
+        },
+        "mods": {
+            "cmd": {
+                "arg": "__custom__",
+                "subtitle": "⌘↩ Paste directly into the active app (blocking)",
+                "valid": has_text,
+                "variables": {
+                    "paste_mode": "foreground",
+                    "custom_instruction": instruction,
+                },
+            }
+        },
+    }
+
+
 def main() -> int:
     raw_query = sys.argv[1] if len(sys.argv) > 1 else ""
-    query = raw_query.strip().lower()
 
     debug_path = os.environ.get("CLAUDE_REFINE_DEBUG_LOG")
     if debug_path:
         try:
             with open(debug_path, "a") as f:
                 f.write(
-                    f"argv={sys.argv!r} raw_query={raw_query!r} query={query!r} "
+                    f"argv={sys.argv!r} raw_query={raw_query!r} "
                     f"cwd={os.getcwd()!r} env_query={os.environ.get('query')!r}\n"
                 )
         except OSError:
             pass
 
+    # Custom-instruction mode: `rw - <free-form instruction>`
+    if raw_query.lstrip().startswith("-"):
+        instruction = raw_query.lstrip()[1:].strip()
+        print(json.dumps({"items": [custom_instruction_item(instruction)]}))
+        return 0
+
+    query = raw_query.strip().lower()
     templates = collect_templates()
 
     if not templates:
