@@ -61,6 +61,18 @@ The installer:
 2. Copies the bundled templates to `~/.config/claude-refine/templates/` — only if that directory doesn't already exist, so your customizations are never overwritten.
 3. Builds `Claude Refine.alfredworkflow` (a zip of the `workflow/` directory) and offers to open it. Double-clicking that file imports the workflow into Alfred.
 
+### Live-sync mode (for development)
+
+If you want to edit templates or the workflow in this repo and have changes apply immediately — no re-install, no Alfred re-import — use:
+
+```bash
+./install.sh --dev
+```
+
+This swaps the copy steps for symlinks: your user templates directory points at the repo's `templates/`, and a symlink in Alfred's workflows folder points at the repo's `workflow/`. The next time Alfred reloads (quit + reopen, or just re-open the Workflows pane), it picks up changes live.
+
+Restart Alfred once after the first `--dev` install so it registers the new workflow. After that, edits propagate without restarting.
+
 ## Use
 
 ### From Alfred
