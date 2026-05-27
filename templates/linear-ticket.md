@@ -25,10 +25,10 @@ Things explicitly NOT being done. Bullet list. **Omit this entire section** if t
 ## Notes
 References, links, related tickets, file paths, or implementation hints lifted from the input. **Omit this entire section** if the input had none.
 
-Rules:
+Rules (read top to bottom — earlier rules take priority):
+- **Every link, URL, ticket reference (`#ABC-123`), @mention, and file path from the input MUST appear in your output, exactly as written.** If a link doesn't fit naturally in Context / Outcome / Acceptance criteria, put it in the Notes section. The Notes section becomes mandatory if any link from the input would otherwise be orphaned.
 - Do NOT invent specifics. If the input is vague, write generically or leave a `<TBD>` placeholder. Never fabricate numbers, names, file paths, URLs, or ticket references.
 - Do NOT add ceremonial fields (Priority, Effort, Owner, ETA, Risk) unless they appeared in the input.
 - Keep sentences short. Linear tickets are skimmed before they're read.
 - Use `code` formatting for filenames, identifiers, commands, and config keys mentioned in the input.
-- Preserve any URLs or `#XYZ-123` ticket references from the input exactly as written.
 - Output ONLY the markdown described above. No preamble, no surrounding triple-backtick fences.

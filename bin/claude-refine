@@ -60,11 +60,28 @@ def strip_frontmatter(text: str) -> str:
     return text[end + len("\n---\n"):].lstrip()
 
 
+GLOBAL_PRESERVATION_RULES = (
+    "GLOBAL PRESERVATION RULES (apply to every template, no exceptions):\n"
+    "- Preserve every URL, markdown link (`[text](url)`), bare link, ticket "
+    "reference (e.g. `#ABC-123`, `XYZ-456`), `@mention`, GitHub-style `#1234`, "
+    "and file path from the input EXACTLY as written — character-for-character.\n"
+    "- Never drop, summarize, paraphrase, or shorten any of the above. If a "
+    "URL is long, keep it long. If a link's display text is awkward, keep it.\n"
+    "- If you cannot fit a link naturally inline, keep it in a 'Links', "
+    "'References', or 'Notes' section at the bottom of your output — but "
+    "never silently remove it.\n"
+)
+
+
 def build_prompt(template_body: str, input_text: str) -> str:
     if "{{INPUT}}" in template_body:
-        return template_body.replace("{{INPUT}}", input_text)
+        return (
+            f"{GLOBAL_PRESERVATION_RULES}\n"
+            f"{template_body.replace('{{INPUT}}', input_text)}"
+        )
     return (
         f"{template_body.strip()}\n\n"
+        f"{GLOBAL_PRESERVATION_RULES}\n"
         f"<text-to-refine>\n{input_text}\n</text-to-refine>\n\n"
         "Output ONLY the rewritten text. No preamble, no markdown code fences, "
         "no commentary, no quotation marks around the output."
