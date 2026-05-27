@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """List available claude-refine templates as Alfred Script Filter JSON.
 
-Reads optional query string from argv[1] for filtering by title/description/stem.
+Templates are merged from two locations (user wins on conflicts):
+    - Bundled: <script dir>/../templates   (the repo's templates)
+    - User:    ~/.config/claude-refine/templates
+
+Set $CLAUDE_REFINE_TEMPLATES_DIR to read ONLY from a single custom directory.
+
+Reads optional query string from argv[1] for case-insensitive filtering by
+title / description / stem.
 """
 from __future__ import annotations
 
@@ -10,17 +17,28 @@ import os
 import sys
 from pathlib import Path
 
-DEFAULT_USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
+USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
 BUNDLED_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 
-def resolve_templates_dir() -> Path:
+def collect_templates() -> dict[str, Path]:
+    templates: dict[str, Path] = {}
     override = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
     if override:
-        return Path(override).expanduser()
-    if DEFAULT_USER_DIR.is_dir():
-        return DEFAULT_USER_DIR
-    return BUNDLED_DIR
+        override_path = Path(override).expanduser()
+        if override_path.is_dir():
+            for p in override_path.glob("*.md"):
+                if p.stem.lower() != "readme":
+                    templates[p.stem] = p
+        return templates
+
+    for source in (BUNDLED_DIR, USER_DIR):
+        if not source.is_dir():
+            continue
+        for p in source.glob("*.md"):
+            if p.stem.lower() != "readme":
+                templates[p.stem] = p
+    return templates
 
 
 def parse_frontmatter(text: str) -> dict[str, str]:
@@ -41,46 +59,49 @@ def parse_frontmatter(text: str) -> dict[str, str]:
 
 def main() -> int:
     query = (sys.argv[1].strip().lower() if len(sys.argv) > 1 else "")
-    templates_dir = resolve_templates_dir()
+    templates = collect_templates()
 
-    if not templates_dir.is_dir():
+    if not templates:
+        searched = (
+            os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
+            or f"{BUNDLED_DIR} and {USER_DIR}"
+        )
         print(json.dumps({
             "items": [{
-                "title": "No templates directory found",
-                "subtitle": f"Expected {templates_dir} — run install.sh from the repo",
+                "title": "No templates found",
+                "subtitle": f"Searched: {searched}",
                 "valid": False,
             }]
         }))
         return 0
 
     items: list[dict] = []
-    for path in sorted(templates_dir.glob("*.md")):
-        if path.stem.lower() == "readme":
-            continue
+    for stem in sorted(templates.keys()):
+        path = templates[stem]
         try:
             meta = parse_frontmatter(path.read_text())
         except OSError:
             continue
 
-        title = meta.get("title") or path.stem.replace("-", " ").title()
+        title = meta.get("title") or stem.replace("-", " ").title()
         subtitle = meta.get("description", "")
-        haystack = f"{title} {subtitle} {path.stem}".lower()
+        haystack = f"{title} {subtitle} {stem}".lower()
         if query and query not in haystack:
             continue
 
         items.append({
-            "uid": path.stem,
+            "uid": stem,
             "title": title,
             "subtitle": subtitle,
-            "arg": path.stem,
-            "autocomplete": path.stem,
-            "match": f"{title} {subtitle} {path.stem}",
+            "arg": stem,
+            "autocomplete": stem,
+            "match": f"{title} {subtitle} {stem}",
         })
 
     if not items:
         items.append({
-            "title": "No matching templates",
-            "subtitle": f"Add a .md file to {templates_dir}",
+            "title": f"No templates matching '{query}'",
+            "subtitle": f"Type to filter or drop a .md file into {USER_DIR}",
             "valid": False,
         })
 

@@ -39,12 +39,13 @@ for dir in /opt/homebrew/bin /usr/local/bin "$HOME/.local/bin" "$HOME/bin"; do
   done
 done
 
-# 2) Templates dir symlink (only if it actually points at this repo)
+# 2) Templates dir symlink (only if it points at this repo — leftover from
+# older versions of install.sh --dev that symlinked the templates dir).
 TEMPLATES_DIR="$HOME/.config/claude-refine/templates"
 if [ -L "$TEMPLATES_DIR" ]; then
   if [ "$(readlink "$TEMPLATES_DIR")" = "$REPO_ROOT/templates" ]; then
     rm "$TEMPLATES_DIR"
-    echo "→ Removed templates symlink $TEMPLATES_DIR"
+    echo "→ Removed legacy templates symlink $TEMPLATES_DIR"
     removed=$((removed + 1))
   fi
 fi

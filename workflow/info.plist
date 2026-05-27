@@ -8,19 +8,6 @@
 	<string>Productivity</string>
 	<key>connections</key>
 	<dict>
-		<key>8D2D899A-C54D-43A9-8020-8141826930A7</key>
-		<array>
-			<dict>
-				<key>destinationuid</key>
-				<string>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</string>
-				<key>modifiers</key>
-				<integer>0</integer>
-				<key>modifiersubtext</key>
-				<string></string>
-				<key>vitoclose</key>
-				<false/>
-			</dict>
-		</array>
 		<key>DB1F123E-F781-41BC-86DD-2D8FB2B763CD</key>
 		<array>
 			<dict>
@@ -88,27 +75,6 @@
 			<key>config</key>
 			<dict>
 				<key>argumenttype</key>
-				<integer>1</integer>
-				<key>keyword</key>
-				<string>rw</string>
-				<key>subtext</key>
-				<string>Refine clipboard text via a Claude template</string>
-				<key>text</key>
-				<string>Claude Refine</string>
-				<key>withspace</key>
-				<true/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.input.keyword</string>
-			<key>uid</key>
-			<string>8D2D899A-C54D-43A9-8020-8141826930A7</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>argumenttype</key>
 				<integer>0</integer>
 				<key>focusedappvariable</key>
 				<false/>
@@ -172,7 +138,7 @@
 				<key>escaping</key>
 				<integer>68</integer>
 				<key>keyword</key>
-				<string></string>
+				<string>rw</string>
 				<key>queuedelaycustom</key>
 				<integer>3</integer>
 				<key>queuedelayimmediatelyinitially</key>
@@ -190,7 +156,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Pick a refinement template</string>
+				<string>Refine clipboard text — pick a template</string>
 				<key>title</key>
 				<string>Claude Refine</string>
 				<key>type</key>
@@ -253,36 +219,27 @@
 
 USAGE
 
-  1. Keyword:  Type `rw` in Alfred → pick a template → uses clipboard text.
+  1. Keyword:  Type `rw` in Alfred. Templates appear immediately; type more to filter
+     (e.g. `rw conc`). The rewritten clipboard text is auto-pasted into the active app.
   2. Universal Action:  Select text anywhere → invoke "Refine via Claude" → pick a template.
-
-The rewritten text replaces your clipboard and is auto-pasted into the active app.
 
 SETUP
 
-  1. Install the Claude CLI: https://claude.com/code
+  1. Install the Claude CLI: https://docs.claude.com/en/docs/claude-code
   2. Sign in:  claude /login
-  3. From the repo root:  ./install.sh
-     — installs `claude-refine` to PATH and seeds ~/.config/claude-refine/templates
+  3. From the repo root:  ./install.sh         (end users)
+                     or:  ./install.sh --dev   (contributors — symlinks for live sync)
 
 TEMPLATES
 
   Drop a new .md file into ~/.config/claude-refine/templates/ to add a refinement
-  option. Each file = one Alfred option. See templates/README.md in the repo for the
-  format.
+  option. Each file = one Alfred option. See templates/README.md in the repo.
 
 REPO
 
   https://github.com/mthines/alfred-claude-refine</string>
 	<key>uidata</key>
 	<dict>
-		<key>8D2D899A-C54D-43A9-8020-8141826930A7</key>
-		<dict>
-			<key>xpos</key>
-			<integer>30</integer>
-			<key>ypos</key>
-			<integer>50</integer>
-		</dict>
 		<key>DB1F123E-F781-41BC-86DD-2D8FB2B763CD</key>
 		<dict>
 			<key>xpos</key>
@@ -324,7 +281,7 @@ REPO
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>1.0.0</string>
+	<string>1.0.1</string>
 	<key>webaddress</key>
 	<string>https://github.com/mthines/alfred-claude-refine</string>
 </dict>

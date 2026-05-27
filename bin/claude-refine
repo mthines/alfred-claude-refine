@@ -19,18 +19,35 @@ import subprocess
 import sys
 from pathlib import Path
 
-DEFAULT_USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
+USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
 BUNDLED_DIR = Path(__file__).resolve().parent.parent / "templates"
 CLAUDE_CMD = os.environ.get("CLAUDE_REFINE_CLAUDE_CMD", "claude")
 
 
-def resolve_templates_dir() -> Path:
+def collect_templates() -> dict[str, Path]:
+    """Return {stem: Path} merging bundled defaults with the user dir.
+
+    User-dir files shadow bundled ones with the same stem. If
+    $CLAUDE_REFINE_TEMPLATES_DIR is set, ONLY that directory is read — useful
+    for testing or running against a custom set.
+    """
+    templates: dict[str, Path] = {}
     override = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
     if override:
-        return Path(override).expanduser()
-    if DEFAULT_USER_DIR.is_dir():
-        return DEFAULT_USER_DIR
-    return BUNDLED_DIR
+        override_path = Path(override).expanduser()
+        if override_path.is_dir():
+            for p in override_path.glob("*.md"):
+                if p.stem.lower() != "readme":
+                    templates[p.stem] = p
+        return templates
+
+    for source in (BUNDLED_DIR, USER_DIR):
+        if not source.is_dir():
+            continue
+        for p in source.glob("*.md"):
+            if p.stem.lower() != "readme":
+                templates[p.stem] = p
+    return templates
 
 
 def strip_frontmatter(text: str) -> str:
@@ -62,12 +79,14 @@ def main() -> int:
         return 64
 
     template_name = sys.argv[1]
-    templates_dir = resolve_templates_dir()
-    template_file = templates_dir / f"{template_name}.md"
-    if not template_file.is_file():
+    templates = collect_templates()
+    template_file = templates.get(template_name)
+    if template_file is None:
+        available = ", ".join(sorted(templates.keys())) or "(none — no templates found)"
         sys.stderr.write(
-            f"Template not found: {template_file}\n"
-            f"Available: {', '.join(sorted(p.stem for p in templates_dir.glob('*.md')))}\n"
+            f"Template not found: {template_name}\n"
+            f"Searched: {BUNDLED_DIR}, {USER_DIR}\n"
+            f"Available: {available}\n"
         )
         return 66
 

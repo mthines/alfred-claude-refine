@@ -72,36 +72,15 @@ chmod +x "$REPO_ROOT/bin/claude-refine" "$REPO_ROOT/bin/claude-refine-templates"
 ln -sf "$REPO_ROOT/bin/claude-refine" "$BIN_DIR/claude-refine"
 ln -sf "$REPO_ROOT/bin/claude-refine-templates" "$BIN_DIR/claude-refine-templates"
 
-# 3) Templates: symlink in dev mode, copy in normal mode
+# 3) User templates dir — for personal templates that layer on top of the bundled
+# set. The CLI auto-discovers bundled templates from the repo via the script's own
+# __file__ resolution, so we never need to copy or symlink the defaults.
 TEMPLATES_DIR="$HOME/.config/claude-refine/templates"
-mkdir -p "$HOME/.config/claude-refine"
-if [ "$DEV_MODE" -eq 1 ]; then
-  if [ -L "$TEMPLATES_DIR" ]; then
-    current_target=$(readlink "$TEMPLATES_DIR")
-    if [ "$current_target" = "$REPO_ROOT/templates" ]; then
-      echo "→ Templates already symlinked to repo (skipping)"
-    else
-      ln -sfn "$REPO_ROOT/templates" "$TEMPLATES_DIR"
-      echo "→ Re-pointed templates symlink → $REPO_ROOT/templates"
-    fi
-  elif [ -d "$TEMPLATES_DIR" ]; then
-    backup="$TEMPLATES_DIR.backup.$(date +%Y%m%d-%H%M%S)"
-    mv "$TEMPLATES_DIR" "$backup"
-    ln -s "$REPO_ROOT/templates" "$TEMPLATES_DIR"
-    echo "→ Replaced templates dir with symlink → $REPO_ROOT/templates"
-    echo "  (your previous templates moved to $backup)"
-  else
-    ln -s "$REPO_ROOT/templates" "$TEMPLATES_DIR"
-    echo "→ Symlinked templates → $REPO_ROOT/templates"
-  fi
+mkdir -p "$TEMPLATES_DIR"
+if [ -z "$(ls -A "$TEMPLATES_DIR" 2>/dev/null)" ]; then
+  echo "→ Created empty $TEMPLATES_DIR (drop .md files here to add personal templates)"
 else
-  if [ ! -d "$TEMPLATES_DIR" ] && [ ! -L "$TEMPLATES_DIR" ]; then
-    echo "→ Seeding templates → $TEMPLATES_DIR"
-    mkdir -p "$TEMPLATES_DIR"
-    cp "$REPO_ROOT"/templates/*.md "$TEMPLATES_DIR/"
-  else
-    echo "→ Templates dir already exists at $TEMPLATES_DIR (preserving your customizations)"
-  fi
+  echo "→ Personal templates dir at $TEMPLATES_DIR ($(ls -1 "$TEMPLATES_DIR" 2>/dev/null | wc -l | tr -d ' ') file(s))"
 fi
 
 # 4) Alfred workflow: symlink in dev mode, build a .alfredworkflow zip otherwise

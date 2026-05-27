@@ -63,13 +63,15 @@ The installer:
 
 ### Live-sync mode (for development)
 
-If you want to edit templates or the workflow in this repo and have changes apply immediately — no re-install, no Alfred re-import — use:
+If you want edits to flow into Alfred without a re-import:
 
 ```bash
 ./install.sh --dev
 ```
 
-This swaps the copy steps for symlinks: your user templates directory points at the repo's `templates/`, and a symlink in Alfred's workflows folder points at the repo's `workflow/`. The next time Alfred reloads (quit + reopen, or just re-open the Workflows pane), it picks up changes live.
+This symlinks `<repo>/workflow/` into Alfred's workflows folder (auto-discovered from `~/Library/Application Support/Alfred/prefs.json`). The CLI binaries are symlinked in both modes, so edits to `bin/claude-refine` are always live.
+
+Bundled templates are read directly from `<repo>/templates/` via the CLI's own path — no copying ever happens — so edits to those files are also live. Personal templates go in `~/.config/claude-refine/templates/` and layer on top.
 
 Restart Alfred once after the first `--dev` install so it registers the new workflow. After that, edits propagate without restarting.
 
@@ -133,11 +135,16 @@ Templates in `~/.config/claude-refine/templates/` shadow the bundled ones. If yo
 
 ### Where templates live
 
-Resolution order, first match wins:
+Two locations are merged together. User-dir files shadow bundled ones with the same key, so you can override a bundled template by creating one with the same filename.
 
-1. `$CLAUDE_REFINE_TEMPLATES_DIR` if set
-2. `~/.config/claude-refine/templates/`
-3. `<repo>/templates/` (bundled fallback)
+| Location | Purpose |
+| --- | --- |
+| `<repo>/templates/` | Bundled defaults — version-controlled in the repo |
+| `~/.config/claude-refine/templates/` | Personal templates — never touched by `install.sh` after creation |
+
+The bundled directory is auto-discovered from the CLI's own path (`$(readlink claude-refine)/../templates`), so it always tracks the repo you installed from. Personal templates live in `~/.config/claude-refine/` so they survive repo moves or `git clean`.
+
+Set `$CLAUDE_REFINE_TEMPLATES_DIR=/some/dir` to bypass both and read only from that single directory (useful for testing).
 
 ## Tips
 
