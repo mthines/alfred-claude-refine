@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+"""Refine text through Claude using a named markdown template.
+
+Reads the text to refine from stdin. Writes the rewritten text to stdout.
+
+Usage:
+    echo "some text" | claude-refine concise
+    pbpaste | claude-refine professional | pbcopy
+
+Template resolution order:
+    1. $CLAUDE_REFINE_TEMPLATES_DIR
+    2. ~/.config/claude-refine/templates
+    3. <script dir>/../templates  (repo layout / bundled fallback)
+"""
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+DEFAULT_USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
+BUNDLED_DIR = Path(__file__).resolve().parent.parent / "templates"
+CLAUDE_CMD = os.environ.get("CLAUDE_REFINE_CLAUDE_CMD", "claude")
+
+
+def resolve_templates_dir() -> Path:
+    override = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
+    if override:
+        return Path(override).expanduser()
+    if DEFAULT_USER_DIR.is_dir():
+        return DEFAULT_USER_DIR
+    return BUNDLED_DIR
+
+
+def strip_frontmatter(text: str) -> str:
+    if not text.startswith("---\n"):
+        return text
+    try:
+        end = text.index("\n---\n", 4)
+    except ValueError:
+        return text
+    return text[end + len("\n---\n"):].lstrip()
+
+
+def build_prompt(template_body: str, input_text: str) -> str:
+    if "{{INPUT}}" in template_body:
+        return template_body.replace("{{INPUT}}", input_text)
+    return (
+        f"{template_body.strip()}\n\n"
+        f"<text-to-refine>\n{input_text}\n</text-to-refine>\n\n"
+        "Output ONLY the rewritten text. No preamble, no markdown code fences, "
+        "no commentary, no quotation marks around the output."
+    )
+
+
+def main() -> int:
+    if len(sys.argv) < 2:
+        sys.stderr.write(
+            "Usage: claude-refine <template-name>  (reads input from stdin)\n"
+        )
+        return 64
+
+    template_name = sys.argv[1]
+    templates_dir = resolve_templates_dir()
+    template_file = templates_dir / f"{template_name}.md"
+    if not template_file.is_file():
+        sys.stderr.write(
+            f"Template not found: {template_file}\n"
+            f"Available: {', '.join(sorted(p.stem for p in templates_dir.glob('*.md')))}\n"
+        )
+        return 66
+
+    input_text = sys.stdin.read().strip()
+    if not input_text:
+        sys.stderr.write("No input text on stdin\n")
+        return 65
+
+    template_body = strip_frontmatter(template_file.read_text())
+    final_prompt = build_prompt(template_body, input_text)
+
+    try:
+        result = subprocess.run(
+            [CLAUDE_CMD, "-p", "--exclude-dynamic-system-prompt-sections"],
+            input=final_prompt,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+    except FileNotFoundError:
+        sys.stderr.write(
+            f"Could not run '{CLAUDE_CMD}'. Is the Claude CLI installed and on PATH?\n"
+        )
+        return 127
+
+    if result.returncode != 0:
+        sys.stderr.write(result.stderr or "claude exited non-zero\n")
+        return result.returncode
+
+    sys.stdout.write(result.stdout.rstrip() + "\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

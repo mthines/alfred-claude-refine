@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.mthines.claude-refine</string>
+	<key>category</key>
+	<string>Productivity</string>
+	<key>connections</key>
+	<dict>
+		<key>8D2D899A-C54D-43A9-8020-8141826930A7</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>DB1F123E-F781-41BC-86DD-2D8FB2B763CD</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>E7897F09-89E1-4F1A-AA02-F3718B08B29E</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>E7897F09-89E1-4F1A-AA02-F3718B08B29E</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>089C726B-11BF-42D5-8EB5-89A51ED0F9B8</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>089C726B-11BF-42D5-8EB5-89A51ED0F9B8</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>43028220-2DF6-4A76-ABA7-0C2F2EE8ACB5</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>Mads Thines</string>
+	<key>description</key>
+	<string>Refine, rewrite, and reshape text via the Claude CLI — extensible with markdown templates.</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Claude Refine</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>keyword</key>
+				<string>rw</string>
+				<key>subtext</key>
+				<string>Refine clipboard text via a Claude template</string>
+				<key>text</key>
+				<string>Claude Refine</string>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.keyword</string>
+			<key>uid</key>
+			<string>8D2D899A-C54D-43A9-8020-8141826930A7</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>name</key>
+				<string>Refine via Claude</string>
+				<key>onlyaction</key>
+				<false/>
+				<key>onlyactiontext</key>
+				<string></string>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>relateduid</key>
+				<string></string>
+				<key>relatedunique</key>
+				<false/>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.action</string>
+			<key>uid</key>
+			<string>DB1F123E-F781-41BC-86DD-2D8FB2B763CD</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argument</key>
+				<string></string>
+				<key>passthroughargument</key>
+				<false/>
+				<key>variables</key>
+				<dict>
+					<key>input_text</key>
+					<string>{query}</string>
+				</dict>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.argument</string>
+			<key>uid</key>
+			<string>E7897F09-89E1-4F1A-AA02-F3718B08B29E</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<false/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>1</integer>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>keyword</key>
+				<string></string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Listing templates...</string>
+				<key>script</key>
+				<string>./list-templates.sh "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>1</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string>Pick a refinement template</string>
+				<key>title</key>
+				<string>Claude Refine</string>
+				<key>type</key>
+				<integer>0</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>102</integer>
+				<key>script</key>
+				<string>./refine.sh "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.script</string>
+			<key>uid</key>
+			<string>089C726B-11BF-42D5-8EB5-89A51ED0F9B8</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<true/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>43028220-2DF6-4A76-ABA7-0C2F2EE8ACB5</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string>Refine, rewrite, and reshape text via the Claude CLI.
+
+USAGE
+
+  1. Keyword:  Type `rw` in Alfred → pick a template → uses clipboard text.
+  2. Universal Action:  Select text anywhere → invoke "Refine via Claude" → pick a template.
+
+The rewritten text replaces your clipboard and is auto-pasted into the active app.
+
+SETUP
+
+  1. Install the Claude CLI: https://claude.com/code
+  2. Sign in:  claude /login
+  3. From the repo root:  ./install.sh
+     — installs `claude-refine` to PATH and seeds ~/.config/claude-refine/templates
+
+TEMPLATES
+
+  Drop a new .md file into ~/.config/claude-refine/templates/ to add a refinement
+  option. Each file = one Alfred option. See templates/README.md in the repo for the
+  format.
+
+REPO
+
+  https://github.com/mthines/alfred-claude-refine</string>
+	<key>uidata</key>
+	<dict>
+		<key>8D2D899A-C54D-43A9-8020-8141826930A7</key>
+		<dict>
+			<key>xpos</key>
+			<integer>30</integer>
+			<key>ypos</key>
+			<integer>50</integer>
+		</dict>
+		<key>DB1F123E-F781-41BC-86DD-2D8FB2B763CD</key>
+		<dict>
+			<key>xpos</key>
+			<integer>30</integer>
+			<key>ypos</key>
+			<integer>180</integer>
+		</dict>
+		<key>E7897F09-89E1-4F1A-AA02-F3718B08B29E</key>
+		<dict>
+			<key>xpos</key>
+			<integer>200</integer>
+			<key>ypos</key>
+			<integer>180</integer>
+		</dict>
+		<key>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</key>
+		<dict>
+			<key>xpos</key>
+			<integer>370</integer>
+			<key>ypos</key>
+			<integer>110</integer>
+		</dict>
+		<key>089C726B-11BF-42D5-8EB5-89A51ED0F9B8</key>
+		<dict>
+			<key>xpos</key>
+			<integer>560</integer>
+			<key>ypos</key>
+			<integer>110</integer>
+		</dict>
+		<key>43028220-2DF6-4A76-ABA7-0C2F2EE8ACB5</key>
+		<dict>
+			<key>xpos</key>
+			<integer>730</integer>
+			<key>ypos</key>
+			<integer>110</integer>
+		</dict>
+	</dict>
+	<key>variables</key>
+	<dict/>
+	<key>variablesdontexport</key>
+	<array/>
+	<key>version</key>
+	<string>1.0.0</string>
+	<key>webaddress</key>
+	<string>https://github.com/mthines/alfred-claude-refine</string>
+</dict>
+</plist>
