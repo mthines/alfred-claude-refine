@@ -51,7 +51,45 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
+				<string>13DE4FC2-9AEF-49C4-AE1E-6977C1EB04E6</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>13DE4FC2-9AEF-49C4-AE1E-6977C1EB04E6</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>58FDD9D4-9588-43F2-8D82-66952C978626</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>sourceoutputuid</key>
+				<string>5E5C9962-4626-436F-AB74-31932388ECDF</string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
 				<string>43028220-2DF6-4A76-ABA7-0C2F2EE8ACB5</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
+		<key>58FDD9D4-9588-43F2-8D82-66952C978626</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1553ADE6-AB6C-43E1-B16D-A40DF0A10B77</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -156,7 +194,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Refine clipboard text — pick a template</string>
+				<string>Pick a template — ⌘↩ for background mode</string>
 				<key>title</key>
 				<string>Claude Refine</string>
 				<key>type</key>
@@ -197,6 +235,36 @@
 		<dict>
 			<key>config</key>
 			<dict>
+				<key>conditions</key>
+				<array>
+					<dict>
+						<key>inputstring</key>
+						<string>{var:paste_mode}</string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>0</integer>
+						<key>matchstring</key>
+						<string>background</string>
+						<key>outputlabel</key>
+						<string>Background</string>
+						<key>uid</key>
+						<string>5E5C9962-4626-436F-AB74-31932388ECDF</string>
+					</dict>
+				</array>
+				<key>elselabel</key>
+				<string>Foreground (auto-paste)</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.conditional</string>
+			<key>uid</key>
+			<string>13DE4FC2-9AEF-49C4-AE1E-6977C1EB04E6</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
 				<key>autopaste</key>
 				<true/>
 				<key>clipboardtext</key>
@@ -213,15 +281,62 @@
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>autopaste</key>
+				<false/>
+				<key>clipboardtext</key>
+				<string>{query}</string>
+				<key>ignoredynamicplaceholders</key>
+				<false/>
+				<key>transient</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.clipboard</string>
+			<key>uid</key>
+			<string>58FDD9D4-9588-43F2-8D82-66952C978626</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>lastpathcomponent</key>
+				<false/>
+				<key>onlyshowifquerypopulated</key>
+				<false/>
+				<key>removeextension</key>
+				<false/>
+				<key>text</key>
+				<string>Refined text on clipboard — ⌘V to paste</string>
+				<key>title</key>
+				<string>Claude Refine — ready</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.output.notification</string>
+			<key>uid</key>
+			<string>1553ADE6-AB6C-43E1-B16D-A40DF0A10B77</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>Refine, rewrite, and reshape text via the Claude CLI.
 
 USAGE
 
-  1. Keyword:  Type `rw` in Alfred. Templates appear immediately; type more to filter
-     (e.g. `rw conc`). The rewritten clipboard text is auto-pasted into the active app.
-  2. Universal Action:  Select text anywhere → invoke "Refine via Claude" → pick a template.
+  Type `rw` in Alfred → pick a template.
+
+    ↩       Foreground mode — auto-pastes the rewritten text into the active app.
+            Use this when you'll stay put for the 3–5s rewrite.
+
+    ⌘ + ↩   Background mode — puts the rewritten text on the clipboard and shows a
+            notification when it's ready. Use this when you want to keep working
+            while Claude refines — switch apps freely, then ⌘V wherever you land.
+
+  Universal Action ("Refine via Claude") works the same way — same modifier rules.
 
 SETUP
 
@@ -245,35 +360,56 @@ REPO
 			<key>xpos</key>
 			<integer>30</integer>
 			<key>ypos</key>
-			<integer>180</integer>
+			<integer>240</integer>
 		</dict>
 		<key>E7897F09-89E1-4F1A-AA02-F3718B08B29E</key>
 		<dict>
 			<key>xpos</key>
 			<integer>200</integer>
 			<key>ypos</key>
-			<integer>180</integer>
+			<integer>240</integer>
 		</dict>
 		<key>7A3BB58D-AFD3-43AD-AD2C-647FC3BD887D</key>
 		<dict>
 			<key>xpos</key>
 			<integer>370</integer>
 			<key>ypos</key>
-			<integer>110</integer>
+			<integer>140</integer>
 		</dict>
 		<key>089C726B-11BF-42D5-8EB5-89A51ED0F9B8</key>
 		<dict>
 			<key>xpos</key>
-			<integer>560</integer>
+			<integer>540</integer>
 			<key>ypos</key>
-			<integer>110</integer>
+			<integer>140</integer>
+		</dict>
+		<key>13DE4FC2-9AEF-49C4-AE1E-6977C1EB04E6</key>
+		<dict>
+			<key>xpos</key>
+			<integer>710</integer>
+			<key>ypos</key>
+			<integer>140</integer>
 		</dict>
 		<key>43028220-2DF6-4A76-ABA7-0C2F2EE8ACB5</key>
 		<dict>
 			<key>xpos</key>
-			<integer>730</integer>
+			<integer>880</integer>
 			<key>ypos</key>
-			<integer>110</integer>
+			<integer>60</integer>
+		</dict>
+		<key>58FDD9D4-9588-43F2-8D82-66952C978626</key>
+		<dict>
+			<key>xpos</key>
+			<integer>880</integer>
+			<key>ypos</key>
+			<integer>220</integer>
+		</dict>
+		<key>1553ADE6-AB6C-43E1-B16D-A40DF0A10B77</key>
+		<dict>
+			<key>xpos</key>
+			<integer>1050</integer>
+			<key>ypos</key>
+			<integer>220</integer>
 		</dict>
 	</dict>
 	<key>variables</key>
@@ -281,7 +417,7 @@ REPO
 	<key>variablesdontexport</key>
 	<array/>
 	<key>version</key>
-	<string>1.0.1</string>
+	<string>1.1.0</string>
 	<key>webaddress</key>
 	<string>https://github.com/mthines/alfred-claude-refine</string>
 </dict>

@@ -109,6 +109,14 @@ def main() -> int:
             "arg": stem,
             "autocomplete": stem,
             "match": f"{title} {subtitle} {stem}",
+            "variables": {"paste_mode": "foreground"},
+            "mods": {
+                "cmd": {
+                    "arg": stem,
+                    "subtitle": "⌘↩ Background — copy to clipboard + notify, no auto-paste",
+                    "variables": {"paste_mode": "background"},
+                }
+            },
         })
 
     if not items:

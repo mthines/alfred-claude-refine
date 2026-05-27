@@ -79,10 +79,21 @@ Restart Alfred once after the first `--dev` install so it registers the new work
 
 ### From Alfred
 
-- **Keyword**: type `rw` in Alfred. The list of templates appears. Pick one (or type to filter). The rewritten clipboard text is auto-pasted into whatever app you came from.
-- **Universal Action**: select any text, invoke Alfred's Universal Actions, choose **Refine via Claude**, pick a template. Auto-pasted back.
+- **Keyword**: type `rw` in Alfred. The list of templates appears. Pick one (or type to filter).
+- **Universal Action**: select any text, invoke Alfred's Universal Actions, choose **Refine via Claude**, pick a template.
 
 Pre-bind the Universal Action to a hotkey in Alfred Preferences → Features → Universal Actions if you use it often.
+
+#### Foreground vs background mode
+
+Each template offers two ways to run, picked by the modifier key when you select it:
+
+| Modifier | Mode | What happens |
+| --- | --- | --- |
+| `↩` | **Foreground** (default) | Rewritten text is auto-pasted into the app you came from. Use when you'll stay put for the 3–5s rewrite. |
+| `⌘ + ↩` | **Background** | Rewritten text goes on the clipboard and a macOS notification fires when it's ready. Use when you want to keep working — switch apps, write a message, then `⌘V` wherever you land. |
+
+Hold `⌘` over an item in the Alfred picker to see the background-mode subtitle reminder.
 
 ### From the terminal
 
