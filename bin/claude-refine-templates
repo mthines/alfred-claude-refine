@@ -161,12 +161,19 @@ def main() -> int:
             },
         })
 
+    # No template matched — if the user typed something, treat it as a
+    # free-form custom instruction. (The explicit `- prefix` shortcut handled
+    # above always shows ONLY the custom item; this branch is the fallback for
+    # users who just type their instruction without a leading dash.)
     if not items:
-        items.append({
-            "title": f"No templates matching '{query}'",
-            "subtitle": f"Type to filter or drop a .md file into {USER_DIR}",
-            "valid": False,
-        })
+        if raw_query.strip():
+            items.append(custom_instruction_item(raw_query.strip()))
+        else:
+            items.append({
+                "title": "No templates found",
+                "subtitle": f"Drop a .md file into {USER_DIR} or the repo's templates/",
+                "valid": False,
+            })
 
     print(json.dumps({"items": items}))
     return 0

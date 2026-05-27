@@ -81,7 +81,7 @@ Restart Alfred once after the first `--dev` install so it registers the new work
 
 - **Keyword**: type `rw` in Alfred. The list of templates appears. Pick one (or type to filter).
 - **Universal Action**: select any text, invoke Alfred's Universal Actions, choose **Refine via Claude**, pick a template.
-- **Custom instruction**: type `rw - <free-form instruction>` to skip the template list and refine with a one-off prompt. Example: `rw - make this more focused on what it's trying to solve`.
+- **Custom instruction**: type any free-form instruction after `rw `. If your text doesn't match a template name, it's automatically treated as a one-off prompt. Example: `rw make this more focused on what it's trying to solve`. Prefix with `-` (`rw - <text>`) to force custom mode even when your text happens to match a template name.
 
 Pre-bind the Universal Action to a hotkey in Alfred Preferences → Features → Universal Actions if you use it often.
 
