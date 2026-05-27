@@ -84,16 +84,16 @@ Restart Alfred once after the first `--dev` install so it registers the new work
 
 Pre-bind the Universal Action to a hotkey in Alfred Preferences → Features → Universal Actions if you use it often.
 
-#### Foreground vs background mode
+#### Background vs foreground mode
 
 Each template offers two ways to run, picked by the modifier key when you select it:
 
 | Modifier | Mode | What happens |
 | --- | --- | --- |
-| `↩` | **Foreground** (default) | Rewritten text is auto-pasted into the app you came from. Use when you'll stay put for the 3–5s rewrite. |
-| `⌘ + ↩` | **Background** | Rewritten text goes on the clipboard and a macOS notification fires when it's ready. Use when you want to keep working — switch apps, write a message, then `⌘V` wherever you land. |
+| `↩` | **Background** (default) | Rewritten text goes on the clipboard and a macOS notification fires when it's ready. Keep working in any app, then `⌘V` wherever you land. |
+| `⌘ + ↩` | **Foreground** | Rewritten text is auto-pasted into the app you came from. Use when you'll stay put for the 3–5s rewrite. |
 
-Hold `⌘` over an item in the Alfred picker to see the background-mode subtitle reminder.
+Hold `⌘` over an item in the Alfred picker to see the foreground-mode subtitle reminder.
 
 ### From the terminal
 

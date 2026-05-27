@@ -109,12 +109,12 @@ def main() -> int:
             "arg": stem,
             "autocomplete": stem,
             "match": f"{title} {subtitle} {stem}",
-            "variables": {"paste_mode": "foreground"},
+            "variables": {"paste_mode": "background"},
             "mods": {
                 "cmd": {
                     "arg": stem,
-                    "subtitle": "⌘↩ Background — copy to clipboard + notify, no auto-paste",
-                    "variables": {"paste_mode": "background"},
+                    "subtitle": "⌘↩ Paste directly into the active app (blocking)",
+                    "variables": {"paste_mode": "foreground"},
                 }
             },
         })

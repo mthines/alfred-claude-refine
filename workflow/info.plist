@@ -194,7 +194,7 @@
 				<key>scriptfile</key>
 				<string></string>
 				<key>subtext</key>
-				<string>Pick a template — ⌘↩ for background mode</string>
+				<string>Pick a template — ⌘↩ to auto-paste directly</string>
 				<key>title</key>
 				<string>Claude Refine</string>
 				<key>type</key>
@@ -329,12 +329,12 @@ USAGE
 
   Type `rw` in Alfred → pick a template.
 
-    ↩       Foreground mode — auto-pastes the rewritten text into the active app.
-            Use this when you'll stay put for the 3–5s rewrite.
+    ↩       Background mode (default) — puts the rewritten text on the clipboard
+            and shows a macOS notification when it's ready. Keep working in any
+            app; then ⌘V wherever you land.
 
-    ⌘ + ↩   Background mode — puts the rewritten text on the clipboard and shows a
-            notification when it's ready. Use this when you want to keep working
-            while Claude refines — switch apps freely, then ⌘V wherever you land.
+    ⌘ + ↩   Foreground mode — auto-pastes the rewritten text into the active app.
+            Use when you'll stay put for the 3–5s rewrite.
 
   Universal Action ("Refine via Claude") works the same way — same modifier rules.
 
