@@ -72,15 +72,57 @@ chmod +x "$REPO_ROOT/bin/claude-refine" "$REPO_ROOT/bin/claude-refine-templates"
 ln -sf "$REPO_ROOT/bin/claude-refine" "$BIN_DIR/claude-refine"
 ln -sf "$REPO_ROOT/bin/claude-refine-templates" "$BIN_DIR/claude-refine-templates"
 
-# 3) User templates dir — for personal templates that layer on top of the bundled
-# set. The CLI auto-discovers bundled templates from the repo via the script's own
-# __file__ resolution, so we never need to copy or symlink the defaults.
+# 3) Templates — the user dir is the single source of truth. Every bundled
+# template lands here so the user can open, edit, or delete any of them.
+#
+#   --dev:    symlink each bundled file into the user dir, so contributor
+#             edits flow back to the repo for committing. Personal templates
+#             you add to the user dir stay as real files (never end up in git).
+#   default:  copy each bundled file into the user dir. Files become
+#             independent — repo updates do NOT propagate; re-run `install.sh`
+#             on a file you've deleted to restore it.
+#
+# In both modes, existing user files are NEVER overwritten — your edits stick.
 TEMPLATES_DIR="$HOME/.config/claude-refine/templates"
 mkdir -p "$TEMPLATES_DIR"
-if [ -z "$(ls -A "$TEMPLATES_DIR" 2>/dev/null)" ]; then
-  echo "→ Created empty $TEMPLATES_DIR (drop .md files here to add personal templates)"
+
+added=0
+linked=0
+skipped=0
+for src in "$REPO_ROOT"/templates/*.md; do
+  [ -f "$src" ] || continue
+  name=$(basename "$src")
+  # The templates/README.md is documentation, not a template — skip it.
+  if [ "$name" = "README.md" ]; then continue; fi
+  dest="$TEMPLATES_DIR/$name"
+
+  if [ "$DEV_MODE" -eq 1 ]; then
+    if [ -L "$dest" ]; then
+      if [ "$(readlink "$dest")" = "$src" ]; then
+        skipped=$((skipped + 1)); continue
+      fi
+      ln -sfn "$src" "$dest"
+      linked=$((linked + 1))
+    elif [ -e "$dest" ]; then
+      skipped=$((skipped + 1))
+    else
+      ln -s "$src" "$dest"
+      linked=$((linked + 1))
+    fi
+  else
+    if [ -e "$dest" ]; then
+      skipped=$((skipped + 1))
+    else
+      cp "$src" "$dest"
+      added=$((added + 1))
+    fi
+  fi
+done
+
+if [ "$DEV_MODE" -eq 1 ]; then
+  echo "→ Templates in $TEMPLATES_DIR: linked $linked from repo, kept $skipped existing"
 else
-  echo "→ Personal templates dir at $TEMPLATES_DIR ($(ls -1 "$TEMPLATES_DIR" 2>/dev/null | wc -l | tr -d ' ') file(s))"
+  echo "→ Templates in $TEMPLATES_DIR: copied $added, kept $skipped existing"
 fi
 
 # 4) Alfred workflow: symlink in dev mode, build a .alfredworkflow zip otherwise

@@ -23,8 +23,10 @@ You can reference the input text in one of two ways:
 
 ## Adding a template
 
-1. Drop a new `.md` file in `~/.config/claude-refine/templates/` (or in this directory if you've put it on `$CLAUDE_REFINE_TEMPLATES_DIR`).
+1. Drop a new `.md` file in `~/.config/claude-refine/templates/`.
 2. That's it. Alfred picks it up on the next invocation — no workflow re-import needed.
+
+The user dir is the single source of truth. `install.sh` seeds it from this `templates/` directory (by copy in default mode, by symlink in `--dev` mode), but the CLI itself only ever reads from the user dir.
 
 ## Tips for writing prompts
 
@@ -33,6 +35,6 @@ You can reference the input text in one of two ways:
 - **Tell it not to add preamble.** Without this, you often get "Here is the rewritten text:" at the top. The runner already appends this instruction at the bottom of your prompt, but if you use `{{INPUT}}` explicitly you should add it yourself.
 - **Constrain hallucination.** "Do not invent new facts, numbers, or names" prevents Claude from filling in plausible-sounding but wrong details when the original was vague.
 
-## Overriding bundled templates
+## Editing bundled templates
 
-If you put a `concise.md` in `~/.config/claude-refine/templates/`, it shadows the bundled one — the user directory always wins when it exists.
+In default install mode the file in your user dir is a plain copy — edit freely and it stays local. In `--dev` mode the user-dir file is a symlink back to the repo, so edits there modify the repo file directly (handy for committing template changes).

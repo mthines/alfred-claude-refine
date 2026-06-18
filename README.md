@@ -63,17 +63,18 @@ The installer:
 
 ### Live-sync mode (for development)
 
-If you want edits to flow into Alfred without a re-import:
+If you want edits to flow into Alfred and back into the repo for committing:
 
 ```bash
 ./install.sh --dev
 ```
 
-This symlinks `<repo>/workflow/` into Alfred's workflows folder (auto-discovered from `~/Library/Application Support/Alfred/prefs.json`). The CLI binaries are symlinked in both modes, so edits to `bin/claude-refine` are always live.
+This:
+- Symlinks the CLI binaries into `PATH` (same as default mode).
+- Symlinks `<repo>/workflow/` into Alfred's workflows folder (auto-discovered from `~/Library/Application Support/Alfred/prefs.json`).
+- Symlinks each bundled template into `~/.config/claude-refine/templates/` so edits propagate to the repo. Personal templates you add to the same directory remain real files and stay out of git.
 
-Bundled templates are read directly from `<repo>/templates/` via the CLI's own path — no copying ever happens — so edits to those files are also live. Personal templates go in `~/.config/claude-refine/templates/` and layer on top.
-
-Restart Alfred once after the first `--dev` install so it registers the new workflow. After that, edits propagate without restarting.
+Restart Alfred once after the first `--dev` install so it registers the workflow. After that, edits to templates, scripts, or `info.plist` propagate without restarting.
 
 ## Use
 
@@ -150,16 +151,16 @@ Templates in `~/.config/claude-refine/templates/` shadow the bundled ones. If yo
 
 ### Where templates live
 
-Two locations are merged together. User-dir files shadow bundled ones with the same key, so you can override a bundled template by creating one with the same filename.
+`~/.config/claude-refine/templates/` is the single source of truth — every template lives there as a regular file you can open, edit, or delete. `install.sh` seeds the directory from the repo's `templates/`:
 
-| Location | Purpose |
+| Mode | What `install.sh` does |
 | --- | --- |
-| `<repo>/templates/` | Bundled defaults — version-controlled in the repo |
-| `~/.config/claude-refine/templates/` | Personal templates — never touched by `install.sh` after creation |
+| `./install.sh` (default) | Copies each bundled template into `~/.config/claude-refine/templates/`. Files are independent: future repo updates do NOT propagate; your edits stay. Re-run `install.sh` on a file you've deleted to restore it. |
+| `./install.sh --dev` | Symlinks each bundled template into `~/.config/claude-refine/templates/`. Editing a symlinked file edits the repo file directly — useful for committing template changes. Personal templates you add to the dir stay as real files and never end up in git. |
 
-The bundled directory is auto-discovered from the CLI's own path (`$(readlink claude-refine)/../templates`), so it always tracks the repo you installed from. Personal templates live in `~/.config/claude-refine/` so they survive repo moves or `git clean`.
+Existing files in the user dir are NEVER overwritten in either mode.
 
-Set `$CLAUDE_REFINE_TEMPLATES_DIR=/some/dir` to bypass both and read only from that single directory (useful for testing).
+Set `$CLAUDE_REFINE_TEMPLATES_DIR=/some/dir` to bypass the user dir entirely and read only from that directory (useful for testing).
 
 ## Tips
 

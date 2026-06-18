@@ -8,10 +8,8 @@ Usage:
     echo "some text" | claude-refine --instruction "make it more focused on what it's trying to solve"
     pbpaste | claude-refine professional | pbcopy
 
-Template resolution order:
-    1. $CLAUDE_REFINE_TEMPLATES_DIR
-    2. ~/.config/claude-refine/templates
-    3. <script dir>/../templates  (repo layout / bundled fallback)
+Templates live in ~/.config/claude-refine/templates (single source of truth,
+seeded from the repo by install.sh). Override with $CLAUDE_REFINE_TEMPLATES_DIR.
 """
 from __future__ import annotations
 
@@ -21,30 +19,19 @@ import sys
 from pathlib import Path
 
 USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
-BUNDLED_DIR = Path(__file__).resolve().parent.parent / "templates"
 CLAUDE_CMD = os.environ.get("CLAUDE_REFINE_CLAUDE_CMD", "claude")
 
 
 def collect_templates() -> dict[str, Path]:
-    """Return {stem: Path} merging bundled defaults with the user dir.
+    """Return {stem: Path} for every template in the user dir.
 
-    User-dir files shadow bundled ones with the same stem. If
-    $CLAUDE_REFINE_TEMPLATES_DIR is set, ONLY that directory is read — useful
-    for testing or running against a custom set.
+    The user dir is the single source of truth — `install.sh` seeds it from
+    the repo's `templates/` (by copy or symlink, depending on --dev). Set
+    `$CLAUDE_REFINE_TEMPLATES_DIR` to override and read from somewhere else.
     """
+    source = Path(os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR", str(USER_DIR))).expanduser()
     templates: dict[str, Path] = {}
-    override = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
-    if override:
-        override_path = Path(override).expanduser()
-        if override_path.is_dir():
-            for p in override_path.glob("*.md"):
-                if p.stem.lower() != "readme":
-                    templates[p.stem] = p
-        return templates
-
-    for source in (BUNDLED_DIR, USER_DIR):
-        if not source.is_dir():
-            continue
+    if source.is_dir():
         for p in source.glob("*.md"):
             if p.stem.lower() != "readme":
                 templates[p.stem] = p
@@ -132,9 +119,10 @@ def main() -> int:
         template_file = templates.get(template_name)
         if template_file is None:
             available = ", ".join(sorted(templates.keys())) or "(none — no templates found)"
+            searched = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR") or str(USER_DIR)
             sys.stderr.write(
                 f"Template not found: {template_name}\n"
-                f"Searched: {BUNDLED_DIR}, {USER_DIR}\n"
+                f"Searched: {searched}\n"
                 f"Available: {available}\n"
             )
             return 66

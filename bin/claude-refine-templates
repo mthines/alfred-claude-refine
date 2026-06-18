@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 """List available claude-refine templates as Alfred Script Filter JSON.
 
-Templates are merged from two locations (user wins on conflicts):
-    - Bundled: <script dir>/../templates   (the repo's templates)
-    - User:    ~/.config/claude-refine/templates
-
-Set $CLAUDE_REFINE_TEMPLATES_DIR to read ONLY from a single custom directory.
+Reads only from ~/.config/claude-refine/templates — install.sh is responsible
+for seeding it from the repo (by copy or symlink, depending on --dev).
+Override with $CLAUDE_REFINE_TEMPLATES_DIR to read from a different directory.
 
 Reads optional query string from argv[1] for case-insensitive filtering by
 title / description / stem.
@@ -18,23 +16,12 @@ import sys
 from pathlib import Path
 
 USER_DIR = Path.home() / ".config" / "claude-refine" / "templates"
-BUNDLED_DIR = Path(__file__).resolve().parent.parent / "templates"
 
 
 def collect_templates() -> dict[str, Path]:
+    source = Path(os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR", str(USER_DIR))).expanduser()
     templates: dict[str, Path] = {}
-    override = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
-    if override:
-        override_path = Path(override).expanduser()
-        if override_path.is_dir():
-            for p in override_path.glob("*.md"):
-                if p.stem.lower() != "readme":
-                    templates[p.stem] = p
-        return templates
-
-    for source in (BUNDLED_DIR, USER_DIR):
-        if not source.is_dir():
-            continue
+    if source.is_dir():
         for p in source.glob("*.md"):
             if p.stem.lower() != "readme":
                 templates[p.stem] = p
@@ -117,14 +104,11 @@ def main() -> int:
     templates = collect_templates()
 
     if not templates:
-        searched = (
-            os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR")
-            or f"{BUNDLED_DIR} and {USER_DIR}"
-        )
+        searched = os.environ.get("CLAUDE_REFINE_TEMPLATES_DIR") or str(USER_DIR)
         print(json.dumps({
             "items": [{
                 "title": "No templates found",
-                "subtitle": f"Searched: {searched}",
+                "subtitle": f"Run install.sh from the repo to seed {searched}",
                 "valid": False,
             }]
         }))
