@@ -137,7 +137,19 @@ def main() -> int:
 
     try:
         result = subprocess.run(
-            [CLAUDE_CMD, "-p", "--exclude-dynamic-system-prompt-sections"],
+            [
+                CLAUDE_CMD,
+                "-p",
+                "--exclude-dynamic-system-prompt-sections",
+                # Disable all hooks for this headless run. Stop hooks (e.g. a
+                # memory/retrospective hook that blocks and injects a
+                # "decide whether to record a lesson" turn) otherwise hijack
+                # the final assistant message, so refine would emit the hook's
+                # message instead of the rewritten text. Unlike `--bare`, this
+                # keeps normal OAuth/keychain auth working.
+                "--settings",
+                '{"disableAllHooks": true}',
+            ],
             input=final_prompt,
             capture_output=True,
             text=True,
